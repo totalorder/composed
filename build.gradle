@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'maven'
+    id 'signing'
     id 'io.franzbecker.gradle-lombok' version '1.14'
 }
 
@@ -32,4 +34,65 @@ test {
 lombok {
     version = "1.18.2"
     sha256 = ""
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+if (project.hasProperty('SONATYPE_USERNAME')) {
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: SONATYPE_USERNAME, password: SONATYPE_PASSWORD)
+                }
+
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: SONATYPE_USERNAME, password: SONATYPE_PASSWORD)
+                }
+
+                pom.project {
+                    name 'Composed'
+                    packaging 'jar'
+                    // optionally artifactId can be defined here 
+                    description 'Thin junit5 wrapper around https://github.com/palantir/docker-compose-rule'
+                    url 'https://github.com/totalorder/composed'
+
+                    scm {
+                        connection 'scm:git:git@github.com:totalorder/composed.git'
+                        developerConnection 'scm:git:git@github.com:totalorder/composed.git'
+                        url 'https://github.com/totalorder/composed'
+                    }
+
+                    licenses {
+                        license {
+                            name 'MIT License'
+                            url 'https://github.com/totalorder/composed/blob/master/LICENSE'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'totalorder'
+                            name 'Anton Blomberg'
+                            email 'anton@deadlock.se'
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
