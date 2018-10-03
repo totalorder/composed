@@ -1,4 +1,4 @@
-# Composed
+# Composed [![Build Status](https://travis-ci.com/totalorder/composed.svg?branch=master)](https://travis-ci.com/totalorder/composed)
 
 Thin junit5 wrapper around https://github.com/palantir/docker-compose-rule
 
