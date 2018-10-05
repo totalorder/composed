@@ -3,10 +3,8 @@ plugins {
     id 'maven'
     id 'signing'
     id 'io.franzbecker.gradle-lombok' version '1.14'
+    id 'net.researchgate.release' version '2.7.0'
 }
-
-group 'se.deadlock'
-version '0.0.1-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
@@ -51,6 +49,10 @@ artifacts {
 }
 
 if (project.hasProperty('SONATYPE_USERNAME')) {
+    signing {
+        sign configurations.archives
+    }
+    
     ext."signing.keyId" = SIGNING_KEY_ID
     ext."signing.secretKeyRingFile" = SIGNING_RING_FILE
     ext."signing.password" = SIGNING_PASSWORD
